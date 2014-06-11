@@ -15,28 +15,35 @@ import com.itkweb.hday.similarakka.messages.WordCount;
 
 public class MapWordActor extends AbstractActor {
 
-	String[] STOP_WORDS = { "le", "du", "de", "par", "la", "je", "tu", "il", "elle", "vous", "nous", "ils", "elles" };
+	String[] STOP_WORDS = { "" };
 	List<String> STOP_WORDS_LIST = Arrays.asList(STOP_WORDS);
 	
-	final ActorRef child = getContext().actorOf(Props.create(ReduceMapActor.class)); //.withRouter(new RoundRobinPool(1))); 
-	static int c = 1;
+	final ActorRef child = getContext().actorOf(Props.create(ReduceMapActor.class).withRouter(new RoundRobinPool(10)), "reduceMap"); 
+	static int c = 0;
 	int l = 1;
+	int i;
 	public MapWordActor() {
-		System.out.println("MWA"+(c++));
-
+		i = c++;
+		System.out.println("Creating "+this);
 		receive(ReceiveBuilder
 				.match(String.class, line -> {
 					List<WordCount> wordCounts = Stream.of(line.split(" "))
 						.map(word -> word.toLowerCase())
 						.filter(word -> !STOP_WORDS_LIST.contains(word))
 						.filter(word -> !word.trim().isEmpty())
+						.filter(word -> word.length() >= 7)
 						.map(word -> word.endsWith(",") ? word.substring(0, word.length()-1) : word)
 						.map(word -> word.endsWith(".") ? word.substring(0, word.length()-1) : word)
 						.map(word -> new WordCount(word))
 						.collect(Collectors.toList());
-//					System.out.println("MWA"+c+" line:"+(l++));
-					child.tell(wordCounts, self());
+					System.out.println(this.toString()+ " tell line #"+(l++));
+					child.tell(wordCounts, sender());
 				}).build());
+	}
+	
+	@Override
+	public String toString() {
+		return "MWA"+i;
 	}
 	
 }
