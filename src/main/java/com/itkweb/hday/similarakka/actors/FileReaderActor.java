@@ -11,25 +11,29 @@ import akka.actor.Props;
 import akka.japi.pf.ReceiveBuilder;
 import akka.routing.RoundRobinPool;
 
-import com.itkweb.hday.similarakka.messages.FileToRead;
-
 public class FileReaderActor extends AbstractActor {
 
-	final ActorRef child = getContext().actorOf(Props.create(MapWordActor.class)); //.withRouter(new RoundRobinPool(1))); 
+	final ActorRef child = getContext().actorOf(Props.create(FileAggregatorActor.class).withRouter(new RoundRobinPool(1)), "fileAggregator"); 
 	static int c = 1;
+	int i;
 	public FileReaderActor() {
-		System.out.println("FRA"+(c++));
+		i = c++;
+		System.out.println("Creating "+this);
 		receive(ReceiveBuilder
-				.match(FileToRead.class,
-						(message) -> {
-							Path path = Paths.get(message.getFilename());
+				.match(String.class,
+						(filename) -> {
+							Path path = Paths.get(filename);
 						    try(Stream<String> lines = Files.lines(path)) {
 						    	lines.forEach(line -> {
-						    		child.tell(line, self());
+						    		child.tell(line, sender());
 						    	});
 
 						    }							
 						}).build());
+	}
+	@Override
+	public String toString() {
+		return "FileReaderActor [i=" + i + "]";
 	}
 
 }
