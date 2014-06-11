@@ -18,7 +18,7 @@ public class MapWordActor extends AbstractActor {
 	String[] STOP_WORDS = { "" };
 	List<String> STOP_WORDS_LIST = Arrays.asList(STOP_WORDS);
 	
-	final ActorRef child = getContext().actorOf(Props.create(ReduceMapActor.class).withRouter(new RoundRobinPool(10)), "reduceMap"); 
+	final ActorRef child = getContext().actorOf(Props.create(ReduceMapActor.class));//.withRouter(new RoundRobinPool(50)), "reduceMap"); 
 	static int c = 0;
 	int l = 1;
 	int i;
@@ -36,7 +36,6 @@ public class MapWordActor extends AbstractActor {
 						.map(word -> word.endsWith(".") ? word.substring(0, word.length()-1) : word)
 						.map(word -> new WordCount(word))
 						.collect(Collectors.toList());
-					System.out.println(this.toString()+ " tell line #"+(l++));
 					child.tell(wordCounts, sender());
 				}).build());
 	}

@@ -30,7 +30,6 @@ public class ReduceMapActor extends AbstractActor {
 												: wordCount);
 							});
 							sender().tell(reducedMap, ActorRef.noSender());
-							System.out.println(this.toString()+" "+reducedMap.keySet().size());
 						})
 				.build());
 	}

@@ -13,7 +13,7 @@ import akka.routing.RoundRobinPool;
 
 public class DirectoryReaderActor extends AbstractActor {
 
-	final ActorRef child = getContext().actorOf(Props.create(FileReaderActor.class).withRouter(new RoundRobinPool(10)), "fileReader"); 
+	final ActorRef child = getContext().actorOf(Props.create(FileReaderActor.class));//.withRouter(new RoundRobinPool(10)), "fileReader"); 
 	
 	public DirectoryReaderActor() {
 		receive(ReceiveBuilder.match(String.class, dir -> {
