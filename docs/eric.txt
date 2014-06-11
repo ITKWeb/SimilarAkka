@@ -1,0 +1,8 @@
+Bonjour,
+
+LEs HDay sont des jours très particuliers.
+Chez ITK, ils permettent de tester une technologies pouvant dans certains cas être réutilisés dans des projets concrets chez ITK.
+
+Bien que cela soit relativement commun dans les société à mentalité anglaise, il est à noter que ITK fait parti des
+très rare société francaise à avoir ce comportement.
+Cela peut apparaître chez certaines startups mais si peu alors que cela apporte une vraie plus value pour une société comme ITK.

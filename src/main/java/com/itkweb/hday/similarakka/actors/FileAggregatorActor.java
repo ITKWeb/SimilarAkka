@@ -14,7 +14,6 @@ import com.itkweb.hday.similarakka.messages.WordCount;
 
 public class FileAggregatorActor extends AbstractActor {
 	
-	private Map<String, WordCount> finalMap = new ConcurrentHashMap<String, WordCount>();
 	
 	final ActorRef mapActor = getContext().actorOf(Props.create(MapWordActor.class));//.withRouter(new RoundRobinPool(50)), "mapWord"); 
 	final ActorRef resultActor = getContext().actorOf(Props.create(ResultActor.class));//.withRouter(new RoundRobinPool(50)), "mapWord"); 
@@ -24,9 +23,9 @@ public class FileAggregatorActor extends AbstractActor {
 	@SuppressWarnings("unchecked")
 	public FileAggregatorActor() {
 		i = c++;
-		System.out.println("Creating "+this);
 		receive(ReceiveBuilder
 				.match(Map.class, map -> {
+					Map<String, WordCount> finalMap = new ConcurrentHashMap<String, WordCount>();
 					Map<String, WordCount> reduced = (Map<String, WordCount>) map;
 					reduced.keySet().forEach(key -> {
 						if (finalMap.containsKey(key)) {
@@ -36,12 +35,15 @@ public class FileAggregatorActor extends AbstractActor {
 							finalMap.put(key, reduced.get(key));
 						}
 					});
-					List<WordCount> coll = finalMap.values().stream().sorted((wc1, wc2) -> Integer.compare(wc2.getCount(),wc1.getCount())).limit(10).collect(Collectors.toList());
+					List<WordCount> coll = finalMap.values().stream().sorted((wc1, wc2) -> Integer.compare(wc2.getCount(),wc1.getCount())).collect(Collectors.toList());
 //					resultActor.tell(finalMap, self());
 					sender().tell(finalMap, self());
 					System.out.println(this.toString() + ": " + coll+" "+finalMap.size());
 				})
-				.match(String.class, file -> mapActor.tell(file, self())).build());
+				.match(String.class, file -> {
+					System.out.println(this.toString() + " line: "+file);
+					mapActor.tell(file, self());
+				}).build());
 	}
 	@Override
 	public String toString() {

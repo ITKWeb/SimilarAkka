@@ -31,7 +31,7 @@ public class MapWordActor extends AbstractActor {
 						.map(word -> word.toLowerCase())
 						.filter(word -> !STOP_WORDS_LIST.contains(word))
 						.filter(word -> !word.trim().isEmpty())
-						.filter(word -> word.length() >= 7)
+						.filter(word -> word.length() >= 2)
 						.map(word -> word.endsWith(",") ? word.substring(0, word.length()-1) : word)
 						.map(word -> word.endsWith(".") ? word.substring(0, word.length()-1) : word)
 						.map(word -> new WordCount(word))

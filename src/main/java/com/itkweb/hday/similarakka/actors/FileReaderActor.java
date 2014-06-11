@@ -13,15 +13,15 @@ import akka.routing.RoundRobinPool;
 
 public class FileReaderActor extends AbstractActor {
 
-	final ActorRef child = getContext().actorOf(Props.create(FileAggregatorActor.class).withRouter(new RoundRobinPool(10)), "fileAggregator"); 
+	final ActorRef child = getContext().actorOf(Props.create(FileAggregatorActor.class));//.withRouter(new RoundRobinPool(10)), "fileAggregator"); 
 	static int c = 1;
 	int i;
 	public FileReaderActor() {
 		i = c++;
-		System.out.println("Creating "+this);
 		receive(ReceiveBuilder
 				.match(String.class,
 						(filename) -> {
+							System.out.println(this.toString()+" reading file "+filename);
 							Path path = Paths.get(filename);
 						    try(Stream<String> lines = Files.lines(path)) {
 						    	lines.forEach(line -> {
